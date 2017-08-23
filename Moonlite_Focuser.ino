@@ -44,6 +44,7 @@ long                   millisLastMove = 0;                // Last move timer to 
 //#define HALFSTEP 8 // Motor pin definitions
 #define SPEED_PIN 9
 #define DIRECTION_PIN 8
+#define TMP36 0
 
 ///////////////////////////
 // Backlash, NOT being used
@@ -363,3 +364,9 @@ long hexstr2long(char *line) {
   return (ret);
 }
 
+float sensor_tmp36() {
+    int lectura = analogRead(TMP36);
+    float voltaje = 5.0 /1024 * lectura ; // Atencion aqui
+    float temp = voltaje * 100 -50 ; 
+    return (temp); 
+}
