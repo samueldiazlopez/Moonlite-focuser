@@ -44,7 +44,6 @@ long                   millisLastMove = 0;                // Last move timer to 
 //#define HALFSTEP 8 // Motor pin definitions
 #define SPEED_PIN 9
 #define DIRECTION_PIN 8
-#define TMP36 0
 
 ///////////////////////////
 // Backlash, NOT being used
@@ -69,6 +68,10 @@ long                   millisButBWPressed = 0;
 #define                EEPROM_POS_LOC 0
 long                   lastSavedPosition = 0;
 
+///////////////////////////
+// Temperature
+///////////////////////////
+#define                TMP36 0
 ///////////////////////////
 // Misc signals
 ///////////////////////////
@@ -283,7 +286,9 @@ void loop() {
       if (!strcasecmp(cmd,"GT"))
       {
         char tempString[6];
-        sprintf(tempString, "%04X", 20);
+        //se ha comprobado que hay que multiplicar por 2 y pasarle un entero para que las aplicaciones den un valor real
+        long temperature = 2 * getTemperature();
+        sprintf(tempString, "%04X", temperature);
         Serial.print(tempString);
         Serial.print("#");
         
@@ -334,6 +339,15 @@ void loop() {
     }
    
 }
+
+//read temperature
+float getTemperature(){
+  int reading = analogRead(TMP36);
+  float voltage = reading * 5.0 / 1024.0;
+  float temp = (voltage - 0.5) * 100;
+  return (temp);
+}
+
 // read the command until the terminating # character
 void serialEvent () {
   while (Serial.available() && !inputcmd)
@@ -362,11 +376,4 @@ long hexstr2long(char *line) {
   long ret = 0;
   ret = strtol(line, NULL, 16);
   return (ret);
-}
-
-float sensor_tmp36() {
-    int lectura = analogRead(TMP36);
-    float voltaje = 5.0 /1024 * lectura ; // Atencion aqui
-    float temp = voltaje * 100 -50 ; 
-    return (temp); 
 }
